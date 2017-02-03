@@ -39,7 +39,7 @@ protocol TextAreaConformance: FormatterConformance {
  *  Protocol for cells that contain a UITextView
  */
 public protocol AreaCell : TextInputCell {
-    var textView: UITextView { get }
+    var textView: UITextView! { get }
 }
 
 extension AreaCell {
@@ -50,26 +50,35 @@ extension AreaCell {
 
 open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equatable, T: InputTypeInitiable {
     
+    @IBOutlet public weak var textView: UITextView!
+    @IBOutlet public weak var placeholderLabel: UILabel?
+    
     required public init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        self.textView = UITextView()
-        self.textView.translatesAutoresizingMaskIntoConstraints = false
-
-        self.placeholderLabel = UILabel()
-        self.placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.placeholderLabel.numberOfLines = 0
-        self.placeholderLabel.textColor = UIColor(white: 0, alpha: 0.22)
-
+        
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        let textView = UITextView()
+        self.textView = textView
+        self.textView?.translatesAutoresizingMaskIntoConstraints = false
+        self.textView?.keyboardType = .default
+        self.textView?.font = .preferredFont(forTextStyle: .body)
+        self.textView?.textContainer.lineFragmentPadding = 0
+        self.textView?.textContainerInset = UIEdgeInsets.zero
+        contentView.addSubview(textView)
+        
+        let placeholderLabel = UILabel()
+        self.placeholderLabel = placeholderLabel
+        self.placeholderLabel?.translatesAutoresizingMaskIntoConstraints = false
+        self.placeholderLabel?.numberOfLines = 0
+        self.placeholderLabel?.textColor = UIColor(white: 0, alpha: 0.22)
+        self.placeholderLabel?.font = self.textView?.font
+        contentView.addSubview(placeholderLabel)
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
-    
-    public var placeholderLabel : UILabel
-    
-    public var textView: UITextView
-    
+
     open var dynamicConstraints = [NSLayoutConstraint]()
     
     open override func setup() {
@@ -78,26 +87,19 @@ open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equ
         switch textAreaRow.textAreaHeight {
         case .dynamic(_):
             height = { UITableViewAutomaticDimension }
-            textView.isScrollEnabled = false
+            textView?.isScrollEnabled = false
         case .fixed(let cellHeight):
             height = { cellHeight }
         }
-        textView.keyboardType = .default
-        textView.delegate = self
-        textView.font = .preferredFont(forTextStyle: .body)
-        textView.textContainer.lineFragmentPadding = 0
-        textView.textContainerInset = UIEdgeInsets.zero
-        placeholderLabel.font = textView.font
-        selectionStyle = .none
-        contentView.addSubview(textView)
-        contentView.addSubview(placeholderLabel)
         
+        textView?.delegate = self
+        selectionStyle = .none
         imageView?.addObserver(self, forKeyPath: "image", options: NSKeyValueObservingOptions.old.union(.new), context: nil)
         setNeedsUpdateConstraints()
     }
     
     deinit {
-        textView.delegate = nil
+        textView?.delegate = nil
         imageView?.removeObserver(self, forKeyPath: "image")
         
     }
@@ -106,27 +108,27 @@ open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equ
         super.update()
         textLabel?.text = nil
         detailTextLabel?.text = nil
-        textView.isEditable = !row.isDisabled
-        textView.textColor = row.isDisabled ? .gray : .black
-        textView.text = row.displayValueFor?(row.value)
-        placeholderLabel.text = (row as? TextAreaConformance)?.placeholder
-        placeholderLabel.sizeToFit()
-        placeholderLabel.isHidden = textView.text.characters.count != 0
+        textView?.isEditable = !row.isDisabled
+        textView?.textColor = row.isDisabled ? .gray : .black
+        textView?.text = row.displayValueFor?(row.value)
+        placeholderLabel?.text = (row as? TextAreaConformance)?.placeholder
+        placeholderLabel?.sizeToFit()
+        placeholderLabel?.isHidden = textView?.text.characters.count != 0
     }
     
     open override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && textView.canBecomeFirstResponder
+        return !row.isDisabled && textView?.canBecomeFirstResponder == true
     }
     
     open override func cellBecomeFirstResponder(withDirection: Direction) -> Bool {
         // workaround to solve https://github.com/xmartlabs/Eureka/issues/887 UIKit issue
-        textView.perform(#selector(UITextView.becomeFirstResponder), with: nil, afterDelay: 0.0)
+        textView?.perform(#selector(UITextView.becomeFirstResponder), with: nil, afterDelay: 0.0)
         return true
         
     }
     
     open override func cellResignFirstResponder() -> Bool {
-        return textView.resignFirstResponder()
+        return textView?.resignFirstResponder() ?? true
     }
     
     open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -143,7 +145,7 @@ open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equ
     private func displayValue(useFormatter: Bool) -> String? {
         guard let v = row.value else { return nil }
         if let formatter = (row as? FormatterConformance)?.formatter, useFormatter {
-            return textView.isFirstResponder ? formatter.editingString(for: v) : formatter.string(for: v)
+            return textView?.isFirstResponder == true ? formatter.editingString(for: v) : formatter.string(for: v)
         }
         return String(describing: v)
     }
@@ -179,7 +181,7 @@ open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equ
             UIView.setAnimationsEnabled(true)
             tableView.setContentOffset(currentOffset, animated: false)
         }
-        placeholderLabel.isHidden = textView.text.characters.count != 0
+        placeholderLabel?.isHidden = textView.text.characters.count != 0
         guard let textValue = textView.text else {
             row.value = nil
             return
@@ -230,7 +232,7 @@ open class _TextAreaCell<T> : Cell<T>, UITextViewDelegate, AreaCell where T: Equ
     open func customConstraints() {
         contentView.removeConstraints(dynamicConstraints)
         dynamicConstraints = []
-        var views : [String: AnyObject] = ["textView": textView, "label": placeholderLabel]
+        var views : [String: AnyObject] = ["textView": textView!, "label": placeholderLabel!]
         dynamicConstraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "V:|-[label]", options: [], metrics: nil, views: views))
         if let textAreaConformance = row as? TextAreaConformance, case .dynamic(let initialTextViewHeight) = textAreaConformance.textAreaHeight {
             dynamicConstraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "V:|-[textView(>=initialHeight@800)]-|", options: [], metrics: ["initialHeight": initialTextViewHeight], views: views))
@@ -259,7 +261,7 @@ open class TextAreaCell : _TextAreaCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 }
 

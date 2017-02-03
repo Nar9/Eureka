@@ -28,45 +28,46 @@ import Foundation
 
 open class PickerCell<T> : Cell<T>, CellType, UIPickerViewDataSource, UIPickerViewDelegate where T: Equatable{
     
-    public var picker: UIPickerView
+    @IBOutlet public weak var picker: UIPickerView?
     
     private var pickerRow : _PickerRow<T>? { return row as? _PickerRow<T> }
     
     public required init(style: UITableViewCellStyle, reuseIdentifier: String?){
-        self.picker = UIPickerView()
-        self.picker.translatesAutoresizingMaskIntoConstraints = false
+        let pickerView = UIPickerView()
+        self.picker = pickerView
+        self.picker?.translatesAutoresizingMaskIntoConstraints = false
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.contentView.addSubview(self.picker)
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[picker]-0-|", options: [], metrics: nil, views: ["picker": self.picker]))
-        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[picker]-0-|", options: [], metrics: nil, views: ["picker": self.picker]))
+        self.contentView.addSubview(pickerView)
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[picker]-0-|", options: [], metrics: nil, views: ["picker": pickerView]))
+        self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[picker]-0-|", options: [], metrics: nil, views: ["picker": pickerView]))
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
         accessoryType = .none
         editingAccessoryType = .none
-        picker.delegate = self
-        picker.dataSource = self
+        picker?.delegate = self
+        picker?.dataSource = self
     }
     
     deinit {
-        picker.delegate = nil
-        picker.dataSource = nil
+        picker?.delegate = nil
+        picker?.dataSource = nil
     }
     
     open override func update(){
         super.update()
         textLabel?.text = nil
         detailTextLabel?.text = nil
-        picker.reloadAllComponents()
+        picker?.reloadAllComponents()
         if let selectedValue = pickerRow?.value, let index = pickerRow?.options.index(of: selectedValue){
-            picker.selectRow(index, inComponent: 0, animated: true)
+            picker?.selectRow(index, inComponent: 0, animated: true)
         }
     }
     

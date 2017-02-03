@@ -38,7 +38,7 @@ class HomeViewController : FormViewController {
            cell.accessoryView?.frame = CGRect(x: 0, y: 0, width: 34, height: 34)
         }
         
-        form =
+        form +++
             
             Section() {
                 $0.header = HeaderFooterView<EurekaLogoView>(.class)
@@ -127,7 +127,7 @@ class RowsExampleViewController: FormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        URLRow.defaultCellUpdate = { cell, row in cell.textField.textColor = .blue }
+        URLRow.defaultCellUpdate = { cell, row in cell.textField?.textColor = .blue }
         LabelRow.defaultCellUpdate = { cell, row in cell.detailTextLabel?.textColor = .orange  }
         CheckRow.defaultCellSetup = { cell, row in cell.tintColor = .orange }
         DateRow.defaultRowInitializer = { row in row.minimumDate = Date() }
@@ -319,7 +319,7 @@ class RowsExampleViewController: FormViewController {
                         $0.useFormatterDuringInput = true
                         //$0.useFormatterOnDidBeginEditing = true
                     }.cellSetup { cell, _  in
-                        cell.textField.keyboardType = .numberPad
+                        cell.textField?.keyboardType = .numberPad
                     }
                 
                 <<< URLRow() {
@@ -440,13 +440,13 @@ class FieldRowCustomizationController : FormViewController {
                 <<< NameRow() {
                         $0.title = "Your name:"
                     }.cellUpdate { cell, row in
-                        cell.textField.textAlignment = .left
-                        cell.textField.placeholder = "(left alignment)"
+                        cell.textField?.textAlignment = .left
+                        cell.textField?.placeholder = "(left alignment)"
                     }
             
                 <<< NameRow().cellUpdate { cell, row in
-                    cell.textField.textAlignment = .right
-                    cell.textField.placeholder = "Name (right alignment)"
+                    cell.textField?.textAlignment = .right
+                    cell.textField?.placeholder = "Name (right alignment)"
                 }
         
             +++ Section(header: "Customized Text field width", footer: "Eureka allows us to set up a specific UITextField width using textFieldPercentage property. In the section above we have also right aligned the textLabels.")
@@ -457,7 +457,7 @@ class FieldRowCustomizationController : FormViewController {
                     $0.placeholder = "textFieldPercentage = 0.6"
                 }
                 .cellUpdate {
-                    $1.cell.textField.textAlignment = .left
+                    $1.cell.textField?.textAlignment = .left
                     $1.cell.textLabel?.textAlignment = .right
                 }
                 <<< NameRow() {
@@ -466,7 +466,7 @@ class FieldRowCustomizationController : FormViewController {
                     $0.placeholder = "textFieldPercentage = 0.6"
                 }
                 .cellUpdate {
-                    $1.cell.textField.textAlignment = .left
+                    $1.cell.textField?.textAlignment = .left
                     $1.cell.textLabel?.textAlignment = .right
                 }
                 <<< NameRow() {
@@ -475,7 +475,7 @@ class FieldRowCustomizationController : FormViewController {
                     $0.placeholder = "textFieldPercentage = 0.7"
                 }
                 .cellUpdate {
-                    $1.cell.textField.textAlignment = .left
+                    $1.cell.textField?.textAlignment = .left
                     $1.cell.textLabel?.textAlignment = .right
                 }
         
@@ -594,14 +594,14 @@ class NativeEventFormViewController : FormViewController {
     
     private func initializeForm() {
         
-        form =
+        form +++
             
                 TextRow("Title").cellSetup { cell, row in
-                    cell.textField.placeholder = row.tag
+                    cell.textField?.placeholder = row.tag
                 }
             
             <<< TextRow("Location").cellSetup {
-                    $1.cell.textField.placeholder = $0.row.tag
+                    $1.cell.textField?.placeholder = $0.row.tag
                 }
         
             +++

@@ -110,8 +110,7 @@ public protocol TextInputCell {
 }
 
 public protocol TextFieldCell: TextInputCell {
-    
-    var textField: UITextField { get }
+    var textField: UITextField! { get }
 }
 
 extension TextFieldCell {
@@ -123,7 +122,7 @@ extension TextFieldCell {
 
 open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: Equatable, T: InputTypeInitiable {
     
-    public var textField: UITextField
+    @IBOutlet public weak var textField: UITextField!
     
     open var titleLabel : UILabel? {
         textLabel?.translatesAutoresizingMaskIntoConstraints = false
@@ -139,7 +138,7 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
     public required init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         
         textField = UITextField()
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField?.translatesAutoresizingMaskIntoConstraints = false
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -162,12 +161,12 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     deinit {
-        textField.delegate = nil
-        textField.removeTarget(self, action: nil, for: .allEvents)
+        textField?.delegate = nil
+        textField?.removeTarget(self, action: nil, for: .allEvents)
         if observingTitleText {
             titleLabel?.removeObserver(self, forKeyPath: "text")
         }
@@ -181,12 +180,12 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
         super.setup()
         selectionStyle = .none
         contentView.addSubview(titleLabel!)
-        contentView.addSubview(textField)
+        contentView.addSubview(textField!)
 
         titleLabel?.addObserver(self, forKeyPath: "text", options: NSKeyValueObservingOptions.old.union(.new), context: nil)
         observingTitleText = true
         imageView?.addObserver(self, forKeyPath: "image", options: NSKeyValueObservingOptions.old.union(.new), context: nil)
-        textField.addTarget(self, action: #selector(_FieldCell.textFieldDidChange(_:)), for: .editingChanged)
+        textField?.addTarget(self, action: #selector(_FieldCell.textFieldDidChange(_:)), for: .editingChanged)
         
     }
     
@@ -194,24 +193,24 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
         super.update()
         detailTextLabel?.text = nil
         if let title = row.title {
-            textField.textAlignment = title.isEmpty ? .left : .right
-            textField.clearButtonMode = title.isEmpty ? .whileEditing : .never
+            textField?.textAlignment = title.isEmpty ? .left : .right
+            textField?.clearButtonMode = title.isEmpty ? .whileEditing : .never
         }
         else{
-            textField.textAlignment =  .left
-            textField.clearButtonMode =  .whileEditing
+            textField?.textAlignment =  .left
+            textField?.clearButtonMode =  .whileEditing
         }
-        textField.delegate = self
-        textField.text = row.displayValueFor?(row.value)
-        textField.isEnabled = !row.isDisabled
-        textField.textColor = row.isDisabled ? .gray : .black
-        textField.font = .preferredFont(forTextStyle: .body)
+        textField?.delegate = self
+        textField?.text = row.displayValueFor?(row.value)
+        textField?.isEnabled = !row.isDisabled
+        textField?.textColor = row.isDisabled ? .gray : .black
+        textField?.font = .preferredFont(forTextStyle: .body)
         if let placeholder = (row as? FieldRowConformance)?.placeholder {
             if let color = (row as? FieldRowConformance)?.placeholderColor {
-                textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [NSForegroundColorAttributeName: color])
+                textField?.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [NSForegroundColorAttributeName: color])
             }
             else{
-                textField.placeholder = (row as? FieldRowConformance)?.placeholder
+                textField?.placeholder = (row as? FieldRowConformance)?.placeholder
             }
         }
         if row.isHighlighted {
@@ -220,15 +219,15 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
     }
     
     open override func cellCanBecomeFirstResponder() -> Bool {
-        return !row.isDisabled && textField.canBecomeFirstResponder
+        return !row.isDisabled && textField?.canBecomeFirstResponder == true
     }
     
     open override func cellBecomeFirstResponder(withDirection: Direction) -> Bool {
-        return textField.becomeFirstResponder()
+        return textField?.becomeFirstResponder() ?? false
     }
     
     open override func cellResignFirstResponder() -> Bool {
-        return textField.resignFirstResponder()
+        return textField?.resignFirstResponder() ?? true
     }
 
     open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -245,8 +244,8 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
     open func customConstraints() {
         contentView.removeConstraints(dynamicConstraints)
         dynamicConstraints = []
-        var views : [String: AnyObject] =  ["textField": textField]
-        dynamicConstraints += NSLayoutConstraint.constraints(withVisualFormat: "V:|-11-[textField]-11-|", options: .alignAllLastBaseline, metrics: nil, views: ["textField": textField])
+        var views : [String: AnyObject] =  ["textField": textField!]
+        dynamicConstraints += NSLayoutConstraint.constraints(withVisualFormat: "V:|-11-[textField]-11-|", options: .alignAllLastBaseline, metrics: nil, views: ["textField": textField!])
         
         if let label = titleLabel, let text = label.text, !text.isEmpty {
             dynamicConstraints += NSLayoutConstraint.constraints(withVisualFormat: "V:|-11-[titleLabel]-11-|", options: .alignAllLastBaseline, metrics: nil, views: ["titleLabel": label])
@@ -257,7 +256,7 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
             if let titleLabel = titleLabel, let text = titleLabel.text, !text.isEmpty {
                 views["label"] = titleLabel
                 dynamicConstraints += NSLayoutConstraint.constraints(withVisualFormat: "H:[imageView]-(15)-[label]-[textField]-|", options: NSLayoutFormatOptions(), metrics: nil, views: views)
-                dynamicConstraints.append(NSLayoutConstraint(item: textField, attribute: .width, relatedBy: (row as? FieldRowConformance)?.textFieldPercentage != nil ? .equal : .greaterThanOrEqual, toItem: contentView, attribute: .width, multiplier: (row as? FieldRowConformance)?.textFieldPercentage ?? 0.3, constant: 0.0))
+                dynamicConstraints.append(NSLayoutConstraint(item: textField!, attribute: .width, relatedBy: (row as? FieldRowConformance)?.textFieldPercentage != nil ? .equal : .greaterThanOrEqual, toItem: contentView, attribute: .width, multiplier: (row as? FieldRowConformance)?.textFieldPercentage ?? 0.3, constant: 0.0))
             }
             else{
                 dynamicConstraints += NSLayoutConstraint.constraints(withVisualFormat: "H:[imageView]-(15)-[textField]-|", options: [], metrics: nil, views: views)
@@ -267,7 +266,7 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
             if let titleLabel = titleLabel, let text = titleLabel.text, !text.isEmpty {
                 views["label"] = titleLabel
                 dynamicConstraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|-[label]-[textField]-|", options: [], metrics: nil, views: views)
-                dynamicConstraints.append(NSLayoutConstraint(item: textField, attribute: .width, relatedBy: (row as? FieldRowConformance)?.textFieldPercentage != nil ? .equal : .greaterThanOrEqual, toItem: contentView, attribute: .width, multiplier: (row as? FieldRowConformance)?.textFieldPercentage ?? 0.3, constant: 0.0))
+                dynamicConstraints.append(NSLayoutConstraint(item: textField!, attribute: .width, relatedBy: (row as? FieldRowConformance)?.textFieldPercentage != nil ? .equal : .greaterThanOrEqual, toItem: contentView, attribute: .width, multiplier: (row as? FieldRowConformance)?.textFieldPercentage ?? 0.3, constant: 0.0))
             }
             else{
                 dynamicConstraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|-[textField]-|", options: .alignAllLeft, metrics: nil, views: views)
@@ -321,7 +320,7 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
     private func displayValue(useFormatter: Bool) -> String? {
         guard let v = row.value else { return nil }
         if let formatter = (row as? FormatterConformance)?.formatter, useFormatter {
-            return textField.isFirstResponder ? formatter.editingString(for: v) : formatter.string(for: v)
+            return textField?.isFirstResponder == true ? formatter.editingString(for: v) : formatter.string(for: v)
         }
         return String(describing: v)
     }

@@ -31,14 +31,14 @@ open class TextCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .default
-        textField.autocapitalizationType = .sentences
-        textField.keyboardType = .default
+        textField?.autocorrectionType = .default
+        textField?.autocapitalizationType = .sentences
+        textField?.keyboardType = .default
     }
 }
 
@@ -50,14 +50,14 @@ open class IntCell : _FieldCell<Int>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .default
-        textField.autocapitalizationType = .none
-        textField.keyboardType = .numberPad
+        textField?.autocorrectionType = .default
+        textField?.autocapitalizationType = .none
+        textField?.keyboardType = .numberPad
     }
 }
 
@@ -68,12 +68,12 @@ open class PhoneCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.keyboardType = .phonePad
+        textField?.keyboardType = .phonePad
     }
 }
 
@@ -84,14 +84,14 @@ open class NameCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .words
-        textField.keyboardType = .asciiCapable
+        textField?.autocorrectionType = .no
+        textField?.autocapitalizationType = .words
+        textField?.keyboardType = .asciiCapable
     }
 }
 
@@ -102,14 +102,14 @@ open class EmailCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .none
-        textField.keyboardType = .emailAddress
+        textField?.autocorrectionType = .no
+        textField?.autocapitalizationType = .none
+        textField?.keyboardType = .emailAddress
     }
 }
 
@@ -120,15 +120,15 @@ open class PasswordCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .none
-        textField.keyboardType = .asciiCapable
-        textField.isSecureTextEntry = true
+        textField?.autocorrectionType = .no
+        textField?.autocapitalizationType = .none
+        textField?.keyboardType = .asciiCapable
+        textField?.isSecureTextEntry = true
     }
 }
 
@@ -139,13 +139,13 @@ open class DecimalCell : _FieldCell<Double>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .no
-        textField.keyboardType = .decimalPad
+        textField?.autocorrectionType = .no
+        textField?.keyboardType = .decimalPad
     }
 }
 
@@ -156,14 +156,14 @@ open class URLCell : _FieldCell<URL>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .none
-        textField.keyboardType = .URL
+        textField?.autocorrectionType = .no
+        textField?.autocapitalizationType = .none
+        textField?.keyboardType = .URL
     }
 }
 
@@ -174,14 +174,14 @@ open class TwitterCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .none
-        textField.keyboardType = .twitter
+        textField?.autocorrectionType = .no
+        textField?.autocapitalizationType = .none
+        textField?.keyboardType = .twitter
     }
 }
 
@@ -192,14 +192,14 @@ open class AccountCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func setup() {
         super.setup()
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .none
-        textField.keyboardType = .asciiCapable
+        textField?.autocorrectionType = .no
+        textField?.autocapitalizationType = .none
+        textField?.keyboardType = .asciiCapable
     }
 }
 
@@ -210,14 +210,14 @@ open class ZipCodeCell : _FieldCell<String>, CellType {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
     
     open override func update() {
         super.update()
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .allCharacters
-        textField.keyboardType = .numbersAndPunctuation
+        textField?.autocorrectionType = .no
+        textField?.autocapitalizationType = .allCharacters
+        textField?.keyboardType = .numbersAndPunctuation
     }
 }
 
